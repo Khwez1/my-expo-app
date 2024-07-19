@@ -1,22 +1,74 @@
-import { Stack } from 'expo-router';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { Alert } from 'react-native';
+import Mapbox, { Camera, LocationPuck, MapView, ShapeSource, SymbolLayer,Images, CircleLayer } from '@rnmapbox/maps';
+// import * as Location from 'expo-location';
+import { featureCollection, point } from '@turf/helpers'
+import pin from '../../assets/pin.png';
+import scooters from '~/data/scooters.json'
+Mapbox.setAccessToken(process.env.EXPO_PUBLIC_MAPBOX_KEY || '');
 
-import { ScreenContent } from '~/components/ScreenContent';
+const App = () => {
+  // useEffect(() => {
+  //   (async () => {
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== 'granted') {
+  //       Alert.alert('Permission to access location was denied');
+  //       return;
+  //     }
 
-export default function Home() {
+  //     let location = await Location.getCurrentPositionAsync({});
+  //     console.log(location);
+  //   })();
+  // }, []);
+  const points = scooters.map(scooter => point([scooter.long, scooter.lat]))
+
   return (
-    <>
-      <Stack.Screen options={{ title: 'Tab One' }} />
-      <View style={styles.container}>
-        <ScreenContent path="app/(tabs)/index.tsx" title="Tab One" />
-      </View>
-    </>
-  );
-}
+    <MapView style={{ flex: 1 }} styleURL='mapbox://styles/mapbox/dark-v11'>
+      <Camera followZoomLevel={14} followUserLocation />
+      <LocationPuck puckBearingEnabled puckBearing='heading' pulsing={{isEnabled: true}} />
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-  },
-});
+      <ShapeSource 
+        id="scooter" 
+        cluster 
+        shape={featureCollection(points)} 
+        onPress={(e) => console.log(JSON.stringify(e, null, 2))}>
+
+        <SymbolLayer 
+          id="clusters-count"
+          style={{
+            textField:['get','point_count'],
+            textSize:18,
+            textColor: '#ffffff',
+            textPitchAlignment: 'map'
+          }}
+        />
+
+        <CircleLayer 
+          id="clusters"
+          filter={['has','point_count']}
+          style={{
+            circlePitchAlignment: 'map',
+            circleColor:'#42E100',
+            circleRadius: 20,
+            circleOpacity:1,
+            circleStrokeWidth:2,
+            circleStrokeColor:'white'
+          }}
+        />
+
+        <SymbolLayer 
+        id="scooter-icons"
+        filter={['!',['has','point_count']]} 
+        style={{
+          iconImage: 'pin',
+          iconSize: 0.5,
+          iconAllowOverlap: false,
+          iconAnchor: 'bottom'
+        }} />
+        <Images images={{ pin }} />
+      </ShapeSource>
+    </MapView>
+  );
+};
+
+export default App;

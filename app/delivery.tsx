@@ -1,10 +1,7 @@
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
-import { Text } from 'react-native';
-
 import Map from '~/components/Map';
 import SelectedScooterSheet from '~/components/SelectedScooterSheet';
 
-const App = () => {
+const delivery = () => {
   return (
     <>
       <Map />
@@ -13,4 +10,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default delivery;

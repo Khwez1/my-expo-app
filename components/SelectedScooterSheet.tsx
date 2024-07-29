@@ -4,6 +4,8 @@ import { useScooter } from '~/providers/ScooterProvider';
 import { useEffect, useRef } from 'react';
 import { FontAwesome6 } from '@expo/vector-icons';
 import scooterImage from '~/assets/scooter.png'
+import { Button } from './Button';
+
 const SelectedScooterSheet = () => {
   const { selectedScooter, duration, distance } = useScooter();
 
@@ -62,7 +64,7 @@ const SelectedScooterSheet = () => {
           </View>
           {/* Bottom part */}
           <View>
-
+            <Button title='start' />
           </View>
         </BottomSheetView>
       )}
